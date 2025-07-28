@@ -129,6 +129,7 @@ class Generator_T_Box:
         triples = "# Classes\n"
         for uri in classes:
             class_ = classes[uri]
+            print(class_)
             triples_class = f"<{uri}> a owl:Class.\n"
             if len(class_['super_classes']) > 0:
                 for super_class in class_['super_classes']:
@@ -328,6 +329,7 @@ class Generator_T_Box:
     def generate_t_box(self)->str:
         classes_explicit = self.extract_classes_explicit()
         print("Explicit classes: "+str(len(classes_explicit)))
+        #raise Exception('kill it with fire')
         self.classes = self.parser_classes(self.classes,classes_explicit)
         classes_implicit = self.extract_classes_implicit()
         print("Implicit classes: "+str(len(classes_implicit)))

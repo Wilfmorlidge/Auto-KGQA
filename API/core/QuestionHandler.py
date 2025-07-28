@@ -5,14 +5,15 @@ from openai import OpenAI
 from dotenv import load_dotenv
 import warnings
 import re
+import os
 from context.ContextLLM import *
 # from langchain.embeddings import SentenceTransformerEmbeddings
 from langchain_community.embeddings import SentenceTransformerEmbeddings
 from configs import NUMBER_HOPS,LIMIT_BY_PROPERTY,FILTER_GRAPH,RELEVANCE_THRESHOLD,MAX_HITS_RATE,PRINT_HITS,TEMPERATURE_TRANSLATE,TEMPERATURE_SELECT,TEMPERATURE_FINAL_ANSWER,USE_A_BOX_INDEX
 
 #OpenAI
-load_dotenv()
-client = OpenAI()
+#load_dotenv()
+#client = OpenAI()
 
 class QuestionHandler:
     def __init__(self,endpoint,endpoint_t_box,t_box_index,normalizer,messagesTranslater=ContextTranslator(""),messagesNL=ContextNLGenerator(),generalConversation=ContextDialog(),messagesChooseBest = ContextChooseBestSPARQL(""),a_box_index=None,model_name="gpt-3.5-turbo-16k") -> None:
@@ -77,7 +78,7 @@ class QuestionHandler:
         self.messagesTranslater.add({"role":"user","content":question})
         self.generalConversation.add({"role":"user","content":question})
         # print(self.messagesTranslater.to_list())
-        completion = client.chat.completions.create(model=self.model_name,messages=self.messagesTranslater.to_list(),n=5,temperature=TEMPERATURE_TRANSLATE)
+        completion = OpenAI(api_key = os.getenv("OPENAI_API_KEY")).chat.completions.create(model=self.model_name,messages=self.messagesTranslater.to_list(),n=5,temperature=TEMPERATURE_TRANSLATE)
         results = []
         sparqls = []
         structured_results = []
@@ -99,7 +100,7 @@ class QuestionHandler:
         # print(results)
         if len(results) > 0:
             self.messagesChooseBest.changeQuestion(question,structured_results)
-            completion = client.chat.completions.create(model=self.model_name,messages=self.messagesChooseBest.to_list(),temperature=TEMPERATURE_SELECT)
+            completion = OpenAI(api_key = os.getenv("OPENAI_API_KEY")).chat.completions.create(model=self.model_name,messages=self.messagesChooseBest.to_list(),temperature=TEMPERATURE_SELECT)
             selection = completion.choices[0].message.content
             # print(f"input:{prompt_best_selection}")
             # print(f"output:{selection}")
@@ -140,7 +141,7 @@ class QuestionHandler:
         ```;
         """
         self.messagesNL.add({"role":"user","content":question_forumlated})
-        completion = client.chat.completions.create(model=self.model_name,messages=self.messagesNL.to_list(),temperature=TEMPERATURE_FINAL_ANSWER)
+        completion = OpenAI(api_key = os.getenv("OPENAI_API_KEY")).chat.completions.create(model=self.model_name,messages=self.messagesNL.to_list(),temperature=TEMPERATURE_FINAL_ANSWER)
         answer = completion.choices[0].message.content
         self.messagesNL.add({"role":"assistant","content":answer})
         if self.generalConversation[-1]["role"] == "assistant":
@@ -167,7 +168,7 @@ class QuestionHandler:
         else:
             print("Não gerou consulta SPARQL válida")
             self.generalConversation.add({"role":"user","content":question})
-            completion = client.chat.completions.create(model=self.model_name, messages=self.generalConversation.to_list())
+            completion = OpenAI(api_key = os.getenv("OPENAI_API_KEY")).chat.completions.create(model=self.model_name, messages=self.generalConversation.to_list())
             answer = completion.choices[0].message.content
             self.generalConversation.add({"role":"assistant","content":answer})
             return {'answer':answer,

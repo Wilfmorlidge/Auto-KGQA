@@ -17,6 +17,7 @@ questions_dataset.csv
 
 # C extensions
 *.so
+.env
 
 # Distribution / packaging
 .Python

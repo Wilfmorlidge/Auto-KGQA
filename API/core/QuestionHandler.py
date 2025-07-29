@@ -19,9 +19,12 @@ from API.nlp.normalizer import *
 from API.sparql.Endpoint import Endpoint
 #Import T-Box index
 from API.index.import_index import *
+
+
 #OpenAI
-#load_dotenv()
-#client = OpenAI()
+load_dotenv()
+
+
 
 class QuestionHandler:
     def __init__(self,endpoint,endpoint_t_box,t_box_index,normalizer,messagesTranslater=ContextTranslator(""),messagesNL=ContextNLGenerator(),generalConversation=ContextDialog(),messagesChooseBest = ContextChooseBestSPARQL(""),a_box_index=None,model_name="gpt-3.5-turbo-16k") -> None:
@@ -86,6 +89,7 @@ class QuestionHandler:
         self.messagesTranslater.add({"role":"user","content":question})
         self.generalConversation.add({"role":"user","content":question})
         # print(self.messagesTranslater.to_list())
+        #client = OpenAI()
         completion = OpenAI(api_key = os.getenv("OPENAI_API_KEY")).chat.completions.create(model=self.model_name,messages=self.messagesTranslater.to_list(),n=5,temperature=TEMPERATURE_TRANSLATE)
         results = []
         sparqls = []
@@ -167,7 +171,6 @@ class QuestionHandler:
             sparqls,results,selection_number = textToSPARQL_return
             sparql_selected = sparqls[selection_number]
             results_selected = results[selection_number]
-            return [sparql_selected,results_selected]
             answer = self.generateNLResponse(question,sparql_selected,results_selected)
             llmAnswer = {'answer':answer,
                          'question':question,
@@ -211,3 +214,5 @@ normalizer, endpoint_t_box, t_box_index, endpoint_a_box, a_box_index = load_conf
 Handler = QuestionHandler(Endpoint(ENDPOINT_KNOWLEDGE_GRAPH_URL),endpoint_t_box,t_box_index,normalizer,a_box_index=a_box_index)
 result = Handler.processQuestion('Which award has a music artist received a nomination for?')
 print(result)
+print(' it terminated without error')
+print(result['sparql'])

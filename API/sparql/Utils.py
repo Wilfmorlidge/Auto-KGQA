@@ -5,11 +5,35 @@ import re
 import validators
 from rdflib.util import guess_format
 
+
+def replace_unquoted_single_quotes(text):
+    # This pattern matches double-quoted strings
+    double_quoted = re.compile(r'"[^"]*"')
+    
+    # Find all double-quoted strings and store them
+    quoted_strings = double_quoted.findall(text)
+    
+    # Replace them temporarily with placeholders
+    placeholder = "___QUOTE_PLACEHOLDER___"
+    temp_text = double_quoted.sub(placeholder, text)
+    
+    # Replace single quotes in the unquoted parts
+    temp_text = temp_text.replace("'", '"')
+    
+    # Restore the original quoted strings
+    for quoted in quoted_strings:
+        temp_text = temp_text.replace(placeholder, quoted, 1)
+    
+    return temp_text
+
+
 def getGraph(triples):
     triples = triples.replace("\\&","")
+    triples = replace_unquoted_single_quotes(triples)
+    triples = triples.replace("xsd:date","<http://www.w3.org/2001/XMLSchema#date>")
     str_in = StringIO(triples)
     g = Graph()
-    g.parse(str_in)
+    g.parse(str_in, format='n3')
     return g
 
 def uri_to_rdflib_ref(uri):

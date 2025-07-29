@@ -12,9 +12,14 @@ import warnings
 
 class Filter_Triples:
     def __init__(self,triples,embedding_function,relevance_threshold=0.4, max_hits_rate=0.1) -> None:
+        
+        with open("output.txt", "w", encoding="utf-8") as file:
+            file.write(triples)
+
         self.endpoint = Endpoint.from_rdflib_in_string(triples)
         self.embedding_function = embedding_function
         self.graph = getGraph(triples)
+        print('skibidi ohio rizz and whatnot')
         # print("Tiples before:")
         # print(self.graph.serialize(format="ttl"))
         # print("------------------------------")

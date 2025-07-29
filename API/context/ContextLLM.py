@@ -1,4 +1,8 @@
-from configs import SIZE_CONTEXT_WINDOW_TRANSLATE, SIZE_CONTEXT_WINDOW_SELECT, SIZE_CONTEXT_WINDOW_FINAL_ANSWER,VISUALIZATION_TOOL_URL
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+
+from API.configs import SIZE_CONTEXT_WINDOW_TRANSLATE, SIZE_CONTEXT_WINDOW_SELECT, SIZE_CONTEXT_WINDOW_FINAL_ANSWER,VISUALIZATION_TOOL_URL
 class ContextDialog:
     def __init__(self,length=7,language="en"):
         self.system = []

@@ -1,6 +1,9 @@
 from nltk.tokenize import sent_tokenize, word_tokenize 
-from configs import MAX_SCORE_PARSER_TRIPLES_FAISS,MIN_SCORE_PARSER_TRIPLES_WOOSH
+import os
+import sys
 from functools import reduce
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+from API.configs import MAX_SCORE_PARSER_TRIPLES_FAISS,MIN_SCORE_PARSER_TRIPLES_WOOSH
 
 def chooseHit(hits,delta_score,delta_count):
     # print("test hits:")

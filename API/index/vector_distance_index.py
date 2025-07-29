@@ -23,7 +23,7 @@ class Index:
             print("New index created!")
         else: 
             print("Loading existing index...")
-            self.index = FAISS.load_local(self.path_index, self.embedding_function)
+            self.index = FAISS.load_local(self.path_index, self.embedding_function,allow_dangerous_deserialization=True)
             # self.index = FAISS.load_local(self.path_index, self.embedding_function,allow_dangerous_deserialization=True)
             print("Existing index Loaded!")
     

@@ -3,12 +3,13 @@ from rdflib.term import URIRef
 from io import StringIO
 import re
 import validators
+from rdflib.util import guess_format
 
 def getGraph(triples):
     triples = triples.replace("\\&","")
     str_in = StringIO(triples)
     g = Graph()
-    g.parse(str_in, format='n3')
+    g.parse(str_in)
     return g
 
 def uri_to_rdflib_ref(uri):

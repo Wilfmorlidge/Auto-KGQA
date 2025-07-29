@@ -1,16 +1,24 @@
-from sparql.Utils import convertToTurtle, list_to_string_triples
-from sparql.Filter_Triples import Filter_Triples
-from nlp.parsers import *
 from openai import OpenAI
 from dotenv import load_dotenv
+import os
+import sys
 import warnings
 import re
 import os
-from context.ContextLLM import *
 # from langchain.embeddings import SentenceTransformerEmbeddings
 from langchain_community.embeddings import SentenceTransformerEmbeddings
-from configs import NUMBER_HOPS,LIMIT_BY_PROPERTY,FILTER_GRAPH,RELEVANCE_THRESHOLD,MAX_HITS_RATE,PRINT_HITS,TEMPERATURE_TRANSLATE,TEMPERATURE_SELECT,TEMPERATURE_FINAL_ANSWER,USE_A_BOX_INDEX
-
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+from API.sparql.Utils import convertToTurtle, list_to_string_triples
+from API.sparql.Filter_Triples import Filter_Triples
+from API.nlp.parsers import *
+from API.context.ContextLLM import *
+from API.configs import NUMBER_HOPS,LIMIT_BY_PROPERTY,FILTER_GRAPH,RELEVANCE_THRESHOLD,MAX_HITS_RATE,PRINT_HITS,TEMPERATURE_TRANSLATE,TEMPERATURE_SELECT,TEMPERATURE_FINAL_ANSWER,USE_A_BOX_INDEX
+from API.core.Configs_loader import load_configs
+from API.configs import *
+from API.nlp.normalizer import *
+from API.sparql.Endpoint import Endpoint
+#Import T-Box index
+from API.index.import_index import *
 #OpenAI
 #load_dotenv()
 #client = OpenAI()
@@ -153,11 +161,13 @@ class QuestionHandler:
 
     def processQuestion(self,question,number_hops=NUMBER_HOPS,limit_by_property=LIMIT_BY_PROPERTY,filter_graph= FILTER_GRAPH,last_question=None):
         ttl = self.getRelevantGraph(question,number_hops,limit_by_property,filter_graph,last_question=last_question)
+        print('is this running?')
         textToSPARQL_return = self.textToSPARQL(question,ttl)
         if textToSPARQL_return != None:
             sparqls,results,selection_number = textToSPARQL_return
             sparql_selected = sparqls[selection_number]
             results_selected = results[selection_number]
+            return [sparql_selected,results_selected]
             answer = self.generateNLResponse(question,sparql_selected,results_selected)
             llmAnswer = {'answer':answer,
                          'question':question,
@@ -195,3 +205,9 @@ class QuestionHandler:
         else:
             finalAnswer =f"""User: {llmAnswer['question']}\nGPT: {llmAnswer['answer']}\n-------------------------------------------------------------\n"""
         print(finalAnswer)
+
+
+normalizer, endpoint_t_box, t_box_index, endpoint_a_box, a_box_index = load_configs()
+Handler = QuestionHandler(Endpoint(ENDPOINT_KNOWLEDGE_GRAPH_URL),endpoint_t_box,t_box_index,normalizer,a_box_index=a_box_index)
+result = Handler.processQuestion('Which award has a music artist received a nomination for?')
+print(result)

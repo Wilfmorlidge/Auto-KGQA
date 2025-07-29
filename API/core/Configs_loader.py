@@ -1,8 +1,12 @@
-from configs import *
-from nlp.normalizer import *
-from sparql.Endpoint import Endpoint
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+
+from API.configs import *
+from API.nlp.normalizer import *
+from API.sparql.Endpoint import Endpoint
 #Import T-Box index
-from index.import_index import *
+from API.index.import_index import *
 
 def load_configs():
     #Normalizer

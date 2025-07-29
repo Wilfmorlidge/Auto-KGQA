@@ -1,10 +1,13 @@
 # from langchain.vectorstores import FAISS
-from langchain_community.vectorstores import FAISS
+import sys
+import networkx as nx
+import os
 from rdflib.term import Literal,URIRef
 from rdflib.extras.external_graph_libs import rdflib_to_networkx_multidigraph
-from sparql.Utils import getGraph, isLabel, list_to_rdf_graph, edges_to_triples, uris_list_to_rdflib_refs_list,is_valid_uri
-import networkx as nx
-from sparql.Endpoint  import Endpoint
+from langchain_community.vectorstores import FAISS
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+from API.sparql.Utils import getGraph, isLabel, list_to_rdf_graph, edges_to_triples, uris_list_to_rdflib_refs_list,is_valid_uri
+from API.sparql.Endpoint  import Endpoint
 import warnings
 
 class Filter_Triples:

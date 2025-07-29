@@ -4,9 +4,11 @@ from rdflib.plugins.sparql.results.jsonresults import JSONResultSerializer
 from SPARQLWrapper import SPARQLWrapper, JSON
 from re import finditer,findall,sub
 import os
+import sys
 import pickle 
-from sparql.Utils import getGraph,is_valid_uri
-from configs import NUMBER_HOPS,LIMIT_BY_PROPERTY
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+from API.sparql.Utils import getGraph,is_valid_uri
+from API.configs import NUMBER_HOPS,LIMIT_BY_PROPERTY
 import xmltodict
 import traceback
 
@@ -170,7 +172,7 @@ class Endpoint:
                        # print('result item' + str(result_item))
                         print('this is the type' +str(type(result_item)))
                         print(result_item)                   
-                        if result_item["?term"] != "term":
+                        if ('?term' not in result_item) or (result_item["?term"] != "term"):
                             result_set.append(result_item)
             return result_set
         except Exception as e:
